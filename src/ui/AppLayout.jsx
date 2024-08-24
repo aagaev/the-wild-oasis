@@ -20,7 +20,7 @@ function AppLayout() {
   return (
     <StyledAppLayout>
       <Header />
-      <Sidebar />
+      <Sidebar /> 
       <Main>
         <Outlet />
       </Main>
