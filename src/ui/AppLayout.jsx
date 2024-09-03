@@ -11,9 +11,10 @@ const StyledAppLayout = styled.div`
 `;
 
 const Main = styled.main`
-  background-color: pink;
+  background-color: var(--color-red-100);
   /* background-color: var(--color-grey-50); */
   padding: 4rem 4.8rem 6.4rem;
+  overflow: scroll; //only this section will move
 `;
 
 const Container = styled.div`
