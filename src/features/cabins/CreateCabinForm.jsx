@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
+// import { useMutation, useQueryClient } from "@tanstack/react-query";
+// import { toast } from "react-hot-toast";
 
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
@@ -9,7 +9,9 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 
 import { useForm } from "react-hook-form";
-import { createEditCabin } from "../../services/apiCabins";
+
+import { useCreateCabin } from "./useCreateCabin";
+import { useEditCabin } from "./useEditCabin";
 
 // const FormRow = styled.div`
 //   display: grid;
@@ -49,41 +51,44 @@ import { createEditCabin } from "../../services/apiCabins";
 
 function CreateCabinForm({ cabinToEdit = {} }) {
   const { id: editId, ...editValues } = cabinToEdit;
-  console.log(editValues);
   const isEditSession = Boolean(editId);
 
   const { register, handleSubmit, reset, getValues, formState } = useForm({
     defaultValues: isEditSession ? editValues : {},
   });
+
   const { errors } = formState;
 
-  const queryClient = useQueryClient();
+  const { isCreating, createCabin } = useCreateCabin();
+  const { isEditing, editCabin } = useEditCabin();
 
-  const { isLoading: isCreating, mutate: createCabin } = useMutation({
-    mutationFn: createEditCabin, //same as below
-    // mutationFn: (newCabin) => createCabin(newCabin),
-    onSuccess: () => {
-      toast.success("New cabin successfully created");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  // const queryClient = useQueryClient();
 
-  const { isLoading: isEditing, mutate: editCabin } = useMutation({
-    mutationFn: ({ newCabinData, id }) => createEditCabin(newCabinData, id), //same as below
-    // mutationFn: (newCabin) => createCabin(newCabin),
-    onSuccess: () => {
-      toast.success("Cabin successfully edited");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  // const { isLoading: isCreating, mutate: createCabin } = useMutation({
+  //   mutationFn: createEditCabin, //same as below
+  //   // mutationFn: (newCabin) => createCabin(newCabin),
+  //   onSuccess: () => {
+  //     toast.success("New cabin successfully created");
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["cabins"],
+  //     });
+  //     reset();
+  //   },
+  //   onError: (err) => toast.error(err.message),
+  // });
+
+  // const { isLoading: isEditing, mutate: editCabin } = useMutation({
+  //   mutationFn: ({ newCabinData, id }) => createEditCabin(newCabinData, id), //same as below
+  //   // mutationFn: (newCabin) => createCabin(newCabin),
+  //   onSuccess: () => {
+  //     toast.success("Cabin successfully edited");
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["cabins"],
+  //     });
+  //     reset();
+  //   },
+  //   onError: (err) => toast.error(err.message),
+  // });
 
   const isWorking = isCreating || isEditing;
 
@@ -91,8 +96,33 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
     // mutate(data);
     if (isEditSession)
-      editCabin({ newCabinData: { ...data, image }, id: editId });
-    else createCabin({ ...data, image: image });
+      editCabin(
+        { newCabinData: { ...data, image }, id: editId },
+        {
+          onSuccess: (data) => {
+            // console.log(data);
+            console.log("Обновлено успешно");
+            reset();
+          },
+        }
+      );
+    else
+      createCabin(
+        { ...data, image: image },
+        {
+          onSuccess: (data) => {
+            reset();
+            console.log("Добавлено успешно");
+            // console.log(data);
+            reset();
+          },
+          //alsp this callback right here actually gets access to the data that
+          // the mutation function returns
+          // or in the other words we can here get access to this new cabin data that we return right here from 'data' as a result of  async function createEditCabin(newCabin, id)
+          //mutate: createCabin =>  mutationFn: createEditCabin => async function createEditCabin(newCabin, id) - which return data (apiCAbins.js)
+          //so this data again is going to be the newly created cabin data or the edited one
+        }
+      );
     // else createCabin({ ...data, image: data.image[0] });
     // console.log(data);
   }
@@ -161,7 +191,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
       </FormRow>
 
       <FormRow
-        disabled={isWorking}
+        // disabled={isWorking}
         label="Description for website"
         error={errors?.description?.message}
       >
