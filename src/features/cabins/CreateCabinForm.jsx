@@ -100,7 +100,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         { newCabinData: { ...data, image }, id: editId },
         {
           onSuccess: (data) => {
-            // console.log(data);
+            // console.log(data); 
             console.log("Обновлено успешно");
             reset();
           },
