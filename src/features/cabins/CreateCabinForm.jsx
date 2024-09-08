@@ -101,7 +101,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         {
           onSuccess: (data) => {
             // console.log(data); 
-            console.log("Обновлено успешно");
+            console.log("Updated");
             reset();
           },
         }
@@ -111,8 +111,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         { ...data, image: image },
         {
           onSuccess: (data) => {
-            reset();
-            console.log("Добавлено успешно");
+                     console.log("Added");
             // console.log(data);
             reset();
           },
