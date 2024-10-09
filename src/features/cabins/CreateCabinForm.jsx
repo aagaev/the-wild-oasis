@@ -49,7 +49,7 @@ import { useEditCabin } from "./useEditCabin";
 //   color: var(--color-red-700);
 // `;
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
 
@@ -100,9 +100,10 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         { newCabinData: { ...data, image }, id: editId },
         {
           onSuccess: (data) => {
-            // console.log(data); 
+            // console.log(data);
             console.log("Updated");
             reset();
+            onCloseModal?.();
           },
         }
       );
@@ -111,9 +112,10 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         { ...data, image: image },
         {
           onSuccess: (data) => {
-                     console.log("Added");
+            console.log("Added");
             // console.log(data);
             reset();
+            onCloseModal?.();
           },
           //alsp this callback right here actually gets access to the data that
           // the mutation function returns
@@ -130,7 +132,10 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmitForm, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmitForm, onError)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow label="Cabin name" error={errors?.name?.message}>
         {/* <Label htmlFor="name">Cabin name</Label> */}
         <Input
@@ -216,7 +221,11 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModal?.()}
+        >
           Cancel
         </Button>
         <Button disabled={isWorking}>
