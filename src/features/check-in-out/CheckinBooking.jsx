@@ -6,8 +6,15 @@ import Heading from "../../ui/Heading";
 import ButtonGroup from "../../ui/ButtonGroup";
 import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
+import Spinner from "../../ui/Spinner";
+import Checkbox from "../../ui/Checkbox";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { useNavigate } from "react-router-dom";
+import { useBooking } from "../bookings/useBooking";
+import { useEffect, useState } from "react";
+import { formatCurrency } from "../../utils/helpers";
+import { useChecking } from "./useCheckin";
 
 const Box = styled.div`
   /* Box */
@@ -18,9 +25,18 @@ const Box = styled.div`
 `;
 
 function CheckinBooking() {
+  const { isLoading, booking } = useBooking();
+  const [confirmPaid, setConfirmPaid] = useState(false);
   const moveBack = useMoveBack();
+  const { checkin, isCheckingIn } = useChecking();
+  const navigate = useNavigate();
 
-  const booking = {};
+  useEffect(() => {
+    setConfirmPaid(booking?.isPaid ?? false); // same as below
+    // setConfirmPaid(booking?.isPaid || false);
+  }, [booking]);
+
+  if (isLoading) return <Spinner />;
 
   const {
     id: bookingId,
@@ -31,7 +47,10 @@ function CheckinBooking() {
     numNights,
   } = booking;
 
-  function handleCheckin() {}
+  function handleCheckin() {
+    if (!confirmPaid) return;
+    checkin(bookingId);
+  }
 
   return (
     <>
@@ -42,8 +61,22 @@ function CheckinBooking() {
 
       <BookingDataBox booking={booking} />
 
+      <Box>
+        <Checkbox
+          disabled={confirmPaid || isCheckingIn}
+          id="confirm"
+          checked={confirmPaid}
+          onChange={() => setConfirmPaid((confirm) => !confirm)}
+        >
+          I confirm that {guests.name} has paid the total amount{" "}
+          {formatCurrency(totalPrice)}
+        </Checkbox>
+      </Box>
+
       <ButtonGroup>
-        <Button onClick={handleCheckin}>Check in booking #{bookingId}</Button>
+        <Button onClick={handleCheckin} disabled={!confirmPaid || isCheckingIn}>
+          Check in booking #{bookingId}totalPrice
+        </Button>
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>
