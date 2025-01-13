@@ -100,6 +100,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
         { newCabinData: { ...data, image }, id: editId },
         {
           onSuccess: (data) => {
+            // editCabin is a mutation function from useEditCabin() so we can call onSuccess as well as use data as a result async mutation func
             // console.log(data);
             console.log("Updated");
             reset();
