@@ -104,7 +104,7 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
             // console.log(data);
             console.log("Updated");
             reset();
-            onCloseModal?.();
+            onCloseModal?.(); 
           },
         }
       );
