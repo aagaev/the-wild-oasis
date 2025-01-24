@@ -9,7 +9,7 @@ function DarkModeProvider({ children }) {
     "isDarkMode"
   );
 
-  console.log(isDarkMode);
+  // console.log(isDarkMode);
 
   useEffect(
     function () {
