@@ -6,6 +6,7 @@ import Heading from "../../ui/Heading";
 import Tag from "../../ui/Tag";
 import ButtonGroup from "../../ui/ButtonGroup";
 import Button from "../../ui/Button";
+import Empty from "../../ui/Empty";
 import ButtonText from "../../ui/ButtonText";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -33,6 +34,7 @@ function BookingDetail() {
   const navigate = useNavigate();
 
   if (isLoading) return <Spinner />;
+  if (!booking) return <Empty resourceName="booking" />;
 
   const { status, id: bookingId } = booking;
 
